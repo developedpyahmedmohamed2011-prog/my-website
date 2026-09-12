@@ -135,7 +135,7 @@
             padding: 60px;
             border-radius: 25px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(102, 126, 234, 0.3);
-            max-width: 900px;
+            max-width: 1200px;
             width: 100%;
             border: 2px solid rgba(102, 126, 234, 0.3);
             position: relative;
@@ -216,7 +216,7 @@
 
         .boxes-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 30px;
             margin-top: 40px;
         }
@@ -318,6 +318,22 @@
             to { opacity: 0; }
         }
 
+        /* Chat iframe style */
+        .chat-container {
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .chat-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+
         /* Tic Tac Toe Styles */
         .tictactoe-container {
             margin-top: 20px;
@@ -349,7 +365,7 @@
             color: #667eea;
         }
 
-        .tictactoe-cell:hover {
+        .tictactoe-cell:hover:not(:disabled) {
             background: rgba(102, 126, 234, 0.3);
             border-color: rgba(102, 126, 234, 0.8);
             transform: scale(1.05);
@@ -379,20 +395,19 @@
             border-color: rgba(102, 126, 234, 0.8);
         }
 
-        /* Chat iframe style */
-        .chat-container {
-            width: 100%;
-            height: 500px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 15px;
+        .player-info {
+            font-size: 13px;
+            color: #999;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 6px;
         }
 
-        .chat-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 10px;
+        @media (max-width: 1024px) {
+            .boxes-container {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -483,7 +498,7 @@ ahmed-x</div>
                     <div class="chat-container">
                         <iframe src="https://tlk.io/1backlorya" allowfullscreen></iframe>
                     </div>
-                    <div class="link-note">ملاحظة: اكتب اسمك مكان Name ودوس enter أو السهم في الكيبورد</div>
+                    <div class="link-note">ملاحظة: اكتب اسمك مكان Name ودوس enter</div>
                 </div>
             </div>
 
@@ -499,18 +514,19 @@ ahmed-x</div>
                     <button class="link-btn" onclick="toggleTicTacToe()">ox</button>
 
                     <div id="tictactoe" class="tictactoe-container" style="display: none;">
+                        <div class="player-info">لاعب 1 (X) ضد لاعب 2 (O)</div>
                         <div class="tictactoe-board" id="board">
-                            <div class="tictactoe-cell" onclick="cellClick(0)"></div>
-                            <div class="tictactoe-cell" onclick="cellClick(1)"></div>
-                            <div class="tictactoe-cell" onclick="cellClick(2)"></div>
-                            <div class="tictactoe-cell" onclick="cellClick(3)"></div>
-                            <div class="tictactoe-cell" onclick="cellClick(4)"></div>
-                            <div class="tictactoe-cell" onclick="cellClick(5)"></div>
-                            <div class="tictactoe-cell" onclick="cellClick(6)"></div>
-                            <div class="tictactoe-cell" onclick="cellClick(7)"></div>
-                            <div class="tictactoe-cell" onclick="cellClick(8)"></div>
+                            <button class="tictactoe-cell" onclick="cellClick(0)"></button>
+                            <button class="tictactoe-cell" onclick="cellClick(1)"></button>
+                            <button class="tictactoe-cell" onclick="cellClick(2)"></button>
+                            <button class="tictactoe-cell" onclick="cellClick(3)"></button>
+                            <button class="tictactoe-cell" onclick="cellClick(4)"></button>
+                            <button class="tictactoe-cell" onclick="cellClick(5)"></button>
+                            <button class="tictactoe-cell" onclick="cellClick(6)"></button>
+                            <button class="tictactoe-cell" onclick="cellClick(7)"></button>
+                            <button class="tictactoe-cell" onclick="cellClick(8)"></button>
                         </div>
-                        <div class="tictactoe-status" id="status">دورك أنت (X)</div>
+                        <div class="tictactoe-status" id="status">دور اللاعب الأول (X)</div>
                         <button class="tictactoe-reset" onclick="resetTicTacToe()">لعبة جديدة</button>
                     </div>
                 </div>
@@ -564,7 +580,7 @@ ahmed-x</div>
             }
         }
 
-        // Tic Tac Toe Game Logic
+        // Tic Tac Toe Game Logic - لاعبين حقيقيين
         let gameBoard = ['', '', '', '', '', '', '', '', ''];
         let currentPlayer = 'X';
         let gameActive = true;
@@ -597,53 +613,31 @@ ahmed-x</div>
             updateBoard();
 
             if (checkWin()) {
-                document.getElementById('status').textContent = `الفائز هو ${currentPlayer}! 🎉`;
+                const playerName = currentPlayer === 'X' ? 'اللاعب الأول' : 'اللاعب الثاني';
+                document.getElementById('status').textContent = `🎉 ${playerName} انتصر!`;
                 gameActive = false;
                 return;
             }
 
             if (gameBoard.every(cell => cell !== '')) {
-                document.getElementById('status').textContent = 'تعادل! 🤝';
+                document.getElementById('status').textContent = '🤝 تعادل!';
                 gameActive = false;
                 return;
             }
 
             currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            document.getElementById('status').textContent = currentPlayer === 'X' ? 'دورك أنت (X)' : 'دور الخصم (O)';
-
-            if (currentPlayer === 'O') {
-                setTimeout(computerMove, 500);
-            }
-        }
-
-        function computerMove() {
-            const emptyIndices = gameBoard.map((cell, idx) => cell === '' ? idx : null).filter(val => val !== null);
-            if (emptyIndices.length === 0) return;
-            
-            const randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-            gameBoard[randomIndex] = 'O';
-            updateBoard();
-
-            if (checkWin()) {
-                document.getElementById('status').textContent = 'الخصم انتصر! 😢';
-                gameActive = false;
-                return;
-            }
-
-            if (gameBoard.every(cell => cell !== '')) {
-                document.getElementById('status').textContent = 'تعادل! 🤝';
-                gameActive = false;
-                return;
-            }
-
-            currentPlayer = 'X';
-            document.getElementById('status').textContent = 'دورك أنت (X)';
+            const playerName = currentPlayer === 'X' ? 'اللاعب الأول' : 'اللاعب الثاني';
+            const playerSymbol = currentPlayer === 'X' ? 'X' : 'O';
+            document.getElementById('status').textContent = `دور ${playerName} (${playerSymbol})`;
         }
 
         function updateBoard() {
             const cells = document.querySelectorAll('.tictactoe-cell');
             cells.forEach((cell, index) => {
                 cell.textContent = gameBoard[index];
+                if (gameBoard[index]) {
+                    cell.style.color = gameBoard[index] === 'X' ? '#667eea' : '#e94560';
+                }
             });
         }
 
@@ -662,7 +656,7 @@ ahmed-x</div>
             gameBoard = ['', '', '', '', '', '', '', '', ''];
             currentPlayer = 'X';
             gameActive = true;
-            document.getElementById('status').textContent = 'دورك أنت (X)';
+            document.getElementById('status').textContent = 'دور اللاعب الأول (X)';
             updateBoard();
         }
     </script>
